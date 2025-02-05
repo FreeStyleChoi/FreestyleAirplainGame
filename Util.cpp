@@ -34,7 +34,23 @@ bool Game::checkCollision(SDL_Rect rect1, SDL_Rect rect2)
 	return Cx || Cy;
 }
 
-bool Game::checkWallCollision(SDL_Rect rect)
+Side Game::checkWallCollision(SDL_Rect rect)
 {
-	return !checkCollision(rect, windowSize);
+	if (rect.x <= 0)
+	{
+		if (rect.y <= 0) { return TOPL; }
+		else if (rect.y + rect.h >= windowSize.h) { return BOTTOML; }
+		else { return LEFT; }
+	}
+	else if (rect.x + rect.w >= windowSize.w)
+	{
+		if (rect.y <= 0) { return TOPR; }
+		else if (rect.y + rect.h >= windowSize.h) { return BOTTOMR; }
+		else { return RIGHT; }
+	}
+
+	else if (rect.y <= 0) { return TOP; }
+	else if (rect.y + rect.h >= windowSize.h) { return BOTTOM; }
+
+	else { return NONE; }
 }

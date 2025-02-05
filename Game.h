@@ -17,10 +17,11 @@ public:
 	void Update();
 	void Finalize();
 
+	// use this function while rendering
 	void printTTF(const char* text, int size, SDL_Renderer* renderer, Uint8 r, Uint8 g, Uint8 b, Uint8 a, int posX, int posY);
 
 	bool checkCollision(SDL_Rect rect1, SDL_Rect rect2);
-	bool checkWallCollision(SDL_Rect rect);
+	Side checkWallCollision(SDL_Rect rect);
 
 private:
 

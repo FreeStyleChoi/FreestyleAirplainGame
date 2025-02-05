@@ -67,7 +67,7 @@ void Game::Init()
 		playerBullet.rect[i].w = 16;
 		playerBullet.rect[i].h = 16;
 		playerBullet.rect[i].x = player.rect.x + ((player.rect.x / 2) - (playerBullet.rect[i].w / 2));
-		playerBullet.rect[i].y = player.rect.y = playerBullet.rect[i].h;
+		playerBullet.rect[i].y = player.rect.y - playerBullet.rect[i].h;
 	}
 
 	SDL_FreeSurface(surface);
@@ -81,7 +81,7 @@ void Game::Init()
 		enemyBullet.rect[i].w = 16;
 		enemyBullet.rect[i].h = 16;
 		enemyBullet.rect[i].x = player.rect.x + ((player.rect.x / 2) - (enemyBullet.rect[i].w / 2));
-		enemyBullet.rect[i].y = player.rect.y = enemyBullet.rect[i].h;
+		enemyBullet.rect[i].y = player.rect.y - enemyBullet.rect[i].h;
 	}
 
 	SDL_FreeSurface(surface);
@@ -171,6 +171,39 @@ void Game::Update()
 		player.rect.x += (int)(player.speed.x * frameDelay / 2);
 		player.rect.y += (int)(player.speed.y * frameDelay / 2);
 
+		switch (checkWallCollision(player.rect))
+		{
+		case TOP:
+			player.rect.y = 0;
+			break;
+		case TOPR:
+			player.rect.y = 0;
+			player.rect.x = windowSize.w - player.rect.w;
+			break;
+		case RIGHT:
+			player.rect.x = windowSize.w - player.rect.w;
+			break;
+		case BOTTOMR:
+			player.rect.y = windowSize.h - player.rect.h;
+			player.rect.x = windowSize.w - player.rect.w;
+			break;
+		case BOTTOM:
+			player.rect.y = windowSize.h - player.rect.h;
+			break;
+		case BOTTOML:
+			player.rect.y = windowSize.h - player.rect.h;
+			player.rect.x = 0;
+			break;
+		case LEFT:
+			player.rect.x = 0;
+			break;
+		case TOPL:
+			player.rect.y = 0;
+			player.rect.x = 0;
+			break;
+		default:
+			break;
+		}
 
 		/////////////////////////////
 

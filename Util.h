@@ -16,11 +16,15 @@ public:
 	float y;
 };
 
-// use this function while rendering
-void printTTF(const char* text, int size, SDL_Renderer* renderer, Uint8 r, Uint8 g, Uint8 b, Uint8 a, int posX, int posY);
-
-// check collision
-bool checkCollision(SDL_Rect rect1, SDL_Rect rect2);
-
-// wall collision
-bool checkWallCollision(SDL_Rect rect);
+typedef enum : int
+{
+	NONE = -1,
+	TOP = 0,
+	TOPR = 1,
+	RIGHT = 2,
+	BOTTOMR = 3,
+	BOTTOM = 4,
+	BOTTOML = 5,
+	LEFT = 6,
+	TOPL = 7
+}Side;
