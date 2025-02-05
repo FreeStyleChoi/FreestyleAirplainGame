@@ -112,13 +112,25 @@ void Game::Update()
 			case SDLK_w:
 				player.speed.y = -0.3;
 				break;
+			case SDLK_UP:
+				player.speed.y = -0.3;
+				break;
 			case SDLK_a:
+				player.speed.x = -0.3;
+				break;
+			case SDLK_LEFT:
 				player.speed.x = -0.3;
 				break;
 			case SDLK_s:
 				player.speed.y = 0.3;
 				break;
+			case SDLK_DOWN:
+				player.speed.y = 0.3;
+				break;
 			case SDLK_d:
+				player.speed.x = 0.3;
+				break;
+			case SDLK_RIGHT:
 				player.speed.x = 0.3;
 				break;
 
@@ -140,13 +152,25 @@ void Game::Update()
 			case SDLK_w:
 				player.speed.y = 0;
 				break;
+			case SDLK_UP:
+				player.speed.y = 0;
+				break;
 			case SDLK_a:
+				player.speed.x = 0;
+				break;
+			case SDLK_LEFT:
 				player.speed.x = 0;
 				break;
 			case SDLK_s:
 				player.speed.y = 0;
 				break;
+			case SDLK_DOWN:
+				player.speed.y = 0;
+				break;
 			case SDLK_d:
+				player.speed.x = 0;
+				break;
+			case SDLK_RIGHT:
 				player.speed.x = 0;
 				break;
 
