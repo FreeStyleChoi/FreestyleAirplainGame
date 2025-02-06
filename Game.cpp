@@ -186,14 +186,38 @@ void Game::Update()
 
 		/////////////////////////////
 
+		// ingmae background
 		for (int i = 0; i < 2; i++)
 		{
 			gameBackground.rect[i].y += (int)(gameBackground.speed.y * frameDelay);
 			if (gameBackground.rect[i].y >= windowSize.h) gameBackground.rect[i].y = 0 - windowSize.h;
 		}
 
+		
+		// player
 		player.rect.x += (int)(player.speed.x * frameDelay / 2);
 		player.rect.y += (int)(player.speed.y * frameDelay / 2);
+
+
+		// enemy
+		float distancePlayerEnemy = (float)sqrt(pow(player.rect.x - enemy.rect.x, 2) + pow(player.rect.y - enemy.rect.y, 2));
+		if (enemy.rect.y < player.rect.y)
+		{
+			enemy.speed.y = ((float)(player.rect.y - enemy.rect.y) * enemyDefaultSpeed) / distancePlayerEnemy;
+			enemy.speed.x = ((float)(player.rect.x - enemy.rect.x) * enemyDefaultSpeed) / distancePlayerEnemy;
+		}
+		else
+		{
+			enemy.speed.x = 0;
+			enemy.speed.y = enemyDefaultSpeed;
+		}
+		
+		enemy.rect.x += (int)(enemy.speed.x * frameDelay / 2);
+		enemy.rect.y += (int)(enemy.speed.y * frameDelay / 2);
+
+
+
+		/////////////////////////////
 
 		switch (checkWallCollision(player.rect))
 		{

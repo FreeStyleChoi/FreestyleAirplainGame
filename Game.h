@@ -42,6 +42,7 @@ private:
 
 	Entity player{};
 	Entity enemy{};
+	const float enemyDefaultSpeed = 0.4;
 
 	BulletEntity playerBullet{};
 	BulletEntity enemyBullet{};
