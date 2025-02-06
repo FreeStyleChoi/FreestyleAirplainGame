@@ -219,6 +219,7 @@ void Game::Update()
 
 		/////////////////////////////
 
+		// player
 		switch (checkWallCollision(player.rect))
 		{
 		case TOP:
@@ -251,6 +252,13 @@ void Game::Update()
 			break;
 		default:
 			break;
+		}
+
+		// enemy
+		if (checkWallCollision(enemy.rect) != NONE)
+		{
+			enemy.rect.x = (windowSize.w - enemy.rect.w) / 2;
+			enemy.rect.y = 0;
 		}
 
 		/////////////////////////////
