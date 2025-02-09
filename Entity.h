@@ -11,8 +11,10 @@ class Entity
 public:
 	SDL_Rect rect{};
 	Vector speed{};
+	Vector defaultSpeed{};
 	SDL_Texture* texture{};
 	bool onScreen = false;
+	unsigned int life;
 };
 
 class BulletEntity

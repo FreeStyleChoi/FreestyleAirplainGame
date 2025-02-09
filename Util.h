@@ -1,5 +1,8 @@
 #pragma once
 #pragma warning( disable : 4244 )
+#pragma warning( disable : 26819 )
+
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
 

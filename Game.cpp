@@ -3,12 +3,15 @@
 void Game::Init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	window = SDL_CreateWindow("2025", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowSize.w, windowSize.h, SDL_WINDOW_ALLOW_HIGHDPI);
+	window = SDL_CreateWindow("2025", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowSize.w, windowSize.h, NULL);
 	renderer = SDL_CreateRenderer(window, -1, 0);
 	if (renderer) { SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); }
 	if (TTF_Init() == -1) { exit(-1); }
 
-	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_CHANNELS, 4, 2048);
+	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 4, 2048);
+	inGameBGM = Mix_LoadMUS("./asset/inGameBGM.ogg");
+
+	Mix_VolumeMusic(64);
 
 	SDL_Surface* surface;
 
@@ -17,7 +20,7 @@ void Game::Init()
 	gameBackground.texture = SDL_CreateTextureFromSurface(renderer, surface);
 
 	gameBackground.speed.x = 0;
-	gameBackground.speed.y = 0.1;
+	gameBackground.speed.y = 0.3;
 	for (int i = 0; i < 2; i++)
 	{
 		gameBackground.rect[i].x = 0;
@@ -40,7 +43,10 @@ void Game::Init()
 	player.rect.y = windowSize.h - player.rect.h;
 	player.speed.x = 0;
 	player.speed.y = 0;
+	player.defaultSpeed.x = 0.7;
+	player.defaultSpeed.y = 0.7;
 	player.onScreen = true;
+	player.life = 3;
 
 	SDL_FreeSurface(surface);
 
@@ -54,6 +60,8 @@ void Game::Init()
 	enemy.rect.y = 0;
 	enemy.speed.x = 0;
 	enemy.speed.y = 0;
+	enemy.defaultSpeed.x = 0.8;
+	enemy.defaultSpeed.y = 0.8;
 	enemy.onScreen = true;
 
 	SDL_FreeSurface(surface);
@@ -89,9 +97,11 @@ void Game::Init()
 
 void Game::Update()
 {
-	frameStart = SDL_GetTicks64();
+	Mix_PlayMusic(inGameBGM, -1);
 	while (isRunning)
 	{
+		frameStart = SDL_GetTicks64();
+
 		SDL_PollEvent(&event);
 		switch (event.type)
 		{
@@ -110,28 +120,20 @@ void Game::Update()
 				break;
 
 			case SDLK_w:
-				player.speed.y = -0.3;
-				break;
-			case SDLK_UP:
-				player.speed.y = -0.3;
+			case SDLK_UP:			
+				player.speed.y = player.defaultSpeed.y * -1;
 				break;
 			case SDLK_a:
-				player.speed.x = -0.3;
-				break;
 			case SDLK_LEFT:
-				player.speed.x = -0.3;
+				player.speed.x = player.defaultSpeed.x * -1;
 				break;
 			case SDLK_s:
-				player.speed.y = 0.3;
-				break;
 			case SDLK_DOWN:
-				player.speed.y = 0.3;
+				player.speed.y = player.defaultSpeed.y;
 				break;
 			case SDLK_d:
-				player.speed.x = 0.3;
-				break;
 			case SDLK_RIGHT:
-				player.speed.x = 0.3;
+				player.speed.x = player.defaultSpeed.x;
 				break;
 
 			default:
@@ -150,26 +152,15 @@ void Game::Update()
 				break;
 
 			case SDLK_w:
-				player.speed.y = 0;
-				break;
 			case SDLK_UP:
-				player.speed.y = 0;
-				break;
-			case SDLK_a:
-				player.speed.x = 0;
-				break;
-			case SDLK_LEFT:
-				player.speed.x = 0;
-				break;
 			case SDLK_s:
-				player.speed.y = 0;
-				break;
 			case SDLK_DOWN:
 				player.speed.y = 0;
 				break;
+
+			case SDLK_a:
+			case SDLK_LEFT:
 			case SDLK_d:
-				player.speed.x = 0;
-				break;
 			case SDLK_RIGHT:
 				player.speed.x = 0;
 				break;
@@ -195,26 +186,25 @@ void Game::Update()
 
 		
 		// player
-		player.rect.x += (int)(player.speed.x * frameDelay / 2);
-		player.rect.y += (int)(player.speed.y * frameDelay / 2);
+		player.rect.x += (int)(player.speed.x * frameDelay);
+		player.rect.y += (int)(player.speed.y * frameDelay);
 
 
 		// enemy
 		float distancePlayerEnemy = (float)sqrt(pow(player.rect.x - enemy.rect.x, 2) + pow(player.rect.y - enemy.rect.y, 2));
 		if (enemy.rect.y < player.rect.y)
 		{
-			enemy.speed.y = ((float)(player.rect.y - enemy.rect.y) * enemyDefaultSpeed) / distancePlayerEnemy;
-			enemy.speed.x = ((float)(player.rect.x - enemy.rect.x) * enemyDefaultSpeed) / distancePlayerEnemy;
+			enemy.speed.y = ((float)(player.rect.y - enemy.rect.y) * enemy.defaultSpeed.y) / distancePlayerEnemy;
+			enemy.speed.x = ((float)(player.rect.x - enemy.rect.x) * enemy.defaultSpeed.x) / distancePlayerEnemy;
 		}
 		else
 		{
 			enemy.speed.x = 0;
-			enemy.speed.y = enemyDefaultSpeed;
+			enemy.speed.y = enemy.defaultSpeed.y;
 		}
 		
-		enemy.rect.x += (int)(enemy.speed.x * frameDelay / 2);
-		enemy.rect.y += (int)(enemy.speed.y * frameDelay / 2);
-
+		enemy.rect.x += (int)(enemy.speed.x * frameDelay);
+		enemy.rect.y += (int)(enemy.speed.y * frameDelay);
 
 
 		/////////////////////////////
@@ -254,12 +244,32 @@ void Game::Update()
 			break;
 		}
 
-		// enemy
+		if (checkCollision(player.rect, enemy.rect))
+		{
+			if (player.life == 0) { printf("game over!\n"); }
+			else
+			{
+				player.life--;
+				printf("player life : %d\n", player.life);
+			}
+
+			// enemy
+
+			enemy.rect.x = (windowSize.w - enemy.rect.w) / 2;
+			enemy.rect.y = 0;
+			enemy.speed.x = 0;
+			enemy.speed.y = 0;
+		}
+
 		if (checkWallCollision(enemy.rect) != NONE)
 		{
 			enemy.rect.x = (windowSize.w - enemy.rect.w) / 2;
 			enemy.rect.y = 0;
+			enemy.speed.x = 0;
+			enemy.speed.y = 0;
 		}
+
+		
 
 		/////////////////////////////
 
@@ -275,6 +285,17 @@ void Game::Update()
 			if (playerBullet.onScreen[i]) { SDL_RenderCopy(renderer, playerBullet.texture, NULL, &playerBullet.rect[i]); }
 		}
 
+		// font
+
+		char tLife[9] = { 'a' };
+		sprintf(tLife, "LIFE %d", player.life);
+		printTTF(tLife, 36, renderer, 255, 255, 255, 0, 10, 10);
+
+		char tScore[27] = { 'a' };
+		sprintf(tScore, "SCORE %d", 0);
+		printTTF(tScore, 36, renderer, 255, 255, 255, 0, 10, 56);
+
+
 		SDL_RenderPresent(renderer);
 
 		////////////////////////////
@@ -286,6 +307,7 @@ void Game::Update()
 
 void Game::Finalize()
 {
+	Mix_FreeMusic(inGameBGM);
 	Mix_CloseAudio();
 
 	SDL_DestroyRenderer(renderer);
