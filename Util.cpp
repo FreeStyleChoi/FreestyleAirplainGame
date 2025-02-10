@@ -25,7 +25,9 @@ void Game::printTTF(const char* text, int size, SDL_Renderer* renderer, Uint8 r,
 	SDL_RenderCopy(renderer, texture, NULL, &rect);
 
 	SDL_FreeSurface(surface);
+	SDL_DestroyTexture(texture);
 	TTF_CloseFont(font);
+
 	return;
 }
 

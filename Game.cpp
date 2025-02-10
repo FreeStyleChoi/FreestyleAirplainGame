@@ -61,13 +61,13 @@ void Game::Init()
 	enemy.speed.x = 0;
 	enemy.speed.y = 0;
 	enemy.defaultSpeed.x = 0.8;
-	enemy.defaultSpeed.y = 0.8;
+	enemy.defaultSpeed.y = 1.6;
 	enemy.onScreen = true;
 
 	SDL_FreeSurface(surface);
 
 	// player bullet
-	surface = IMG_Load("");
+	surface = IMG_Load("./asset/weapon.png");
 	playerBullet.texture = SDL_CreateTextureFromSurface(renderer, surface);
 	
 	for (int i = 0; i < MAXBULLET; i++)
@@ -76,12 +76,17 @@ void Game::Init()
 		playerBullet.rect[i].h = 16;
 		playerBullet.rect[i].x = player.rect.x + ((player.rect.x / 2) - (playerBullet.rect[i].w / 2));
 		playerBullet.rect[i].y = player.rect.y - playerBullet.rect[i].h;
+		playerBullet.speed.x = 0;
+		playerBullet.speed.y = 0;
+		playerBullet.defaultSpeed.x = 0;
+		playerBullet.defaultSpeed.y = 0;
+		playerBullet.onScreen[i] = false;
 	}
 
 	SDL_FreeSurface(surface);
 
 	// enemy bullet
-	surface = IMG_Load("");
+	surface = IMG_Load("./asset/enemy_weapon.png");
 	enemyBullet.texture = SDL_CreateTextureFromSurface(renderer, surface);
 	
 	for (int i = 0; i < MAXBULLET; i++)
@@ -90,6 +95,11 @@ void Game::Init()
 		enemyBullet.rect[i].h = 16;
 		enemyBullet.rect[i].x = player.rect.x + ((player.rect.x / 2) - (enemyBullet.rect[i].w / 2));
 		enemyBullet.rect[i].y = player.rect.y - enemyBullet.rect[i].h;
+		enemyBullet.speed.x = 0;
+		enemyBullet.speed.y = 0;
+		enemyBullet.defaultSpeed.x = 0;
+		enemyBullet.defaultSpeed.y = 0;
+		enemyBullet.onScreen[i] = false;
 	}
 
 	SDL_FreeSurface(surface);
@@ -287,11 +297,11 @@ void Game::Update()
 
 		// font
 
-		char tLife[9] = { 'a' };
+		char tLife[9] = { '\0' };
 		sprintf(tLife, "LIFE %d", player.life);
 		printTTF(tLife, 36, renderer, 255, 255, 255, 0, 10, 10);
 
-		char tScore[27] = { 'a' };
+		char tScore[27] = { '\0' };
 		sprintf(tScore, "SCORE %d", 0);
 		printTTF(tScore, 36, renderer, 255, 255, 255, 0, 10, 56);
 

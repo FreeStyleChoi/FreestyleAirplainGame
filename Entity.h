@@ -21,7 +21,8 @@ class BulletEntity
 {
 public:
 	SDL_Rect rect[MAXBULLET]{};
-	Vector speed[MAXBULLET]{};
+	Vector speed{};
+	Vector defaultSpeed{};
 	SDL_Texture* texture{};
 	bool onScreen[MAXBULLET]{};
 };
