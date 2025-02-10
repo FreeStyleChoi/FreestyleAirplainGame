@@ -10,6 +10,7 @@ void Game::Init()
 
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 4, 2048);
 	inGameBGM = Mix_LoadMUS("./asset/inGameBGM.ogg");
+	bulletSoundEffect = Mix_LoadWAV("./asset/shooting.wav");
 
 	Mix_VolumeMusic(64);
 
@@ -47,6 +48,7 @@ void Game::Init()
 	player.defaultSpeed.y = 0.7;
 	player.onScreen = true;
 	player.life = 3;
+	score = 0;
 
 	SDL_FreeSurface(surface);
 
@@ -61,7 +63,7 @@ void Game::Init()
 	enemy.speed.x = 0;
 	enemy.speed.y = 0;
 	enemy.defaultSpeed.x = 0.8;
-	enemy.defaultSpeed.y = 1.6;
+	enemy.defaultSpeed.y = 0.8;
 	enemy.onScreen = true;
 
 	SDL_FreeSurface(surface);
@@ -74,11 +76,11 @@ void Game::Init()
 	{
 		playerBullet.rect[i].w = 16;
 		playerBullet.rect[i].h = 16;
-		playerBullet.rect[i].x = player.rect.x + ((player.rect.x / 2) - (playerBullet.rect[i].w / 2));
-		playerBullet.rect[i].y = player.rect.y - playerBullet.rect[i].h;
+		playerBullet.rect[i].x = player.rect.x + (player.rect.w / 2) - playerBullet.rect[i].w / 2;
+		playerBullet.rect[i].y = player.rect.y + playerBullet.rect[i].h;
 		playerBullet.speed.x = 0;
 		playerBullet.speed.y = 0;
-		playerBullet.defaultSpeed.x = 0;
+		playerBullet.defaultSpeed.x = 1.4;
 		playerBullet.defaultSpeed.y = 0;
 		playerBullet.onScreen[i] = false;
 	}
@@ -95,7 +97,7 @@ void Game::Init()
 		enemyBullet.rect[i].h = 16;
 		enemyBullet.rect[i].x = player.rect.x + ((player.rect.x / 2) - (enemyBullet.rect[i].w / 2));
 		enemyBullet.rect[i].y = player.rect.y - enemyBullet.rect[i].h;
-		enemyBullet.speed.x = 0;
+		enemyBullet.speed.x = 1.6;
 		enemyBullet.speed.y = 0;
 		enemyBullet.defaultSpeed.x = 0;
 		enemyBullet.defaultSpeed.y = 0;
@@ -146,6 +148,10 @@ void Game::Update()
 				player.speed.x = player.defaultSpeed.x;
 				break;
 
+			case SDLK_LSHIFT:
+				player.defaultSpeed = { 0.3f, 0.3f };
+				break;
+
 			default:
 				break;
 			}
@@ -173,6 +179,23 @@ void Game::Update()
 			case SDLK_d:
 			case SDLK_RIGHT:
 				player.speed.x = 0;
+				break;
+
+			case SDLK_SPACE:
+				for (int i = 0; i < MAXBULLET; i++)
+				{
+					if (playerBullet.onScreen[i] == false)
+					{
+						playerBullet.onScreen[i] = true;
+						Mix_PlayChannel(-1, bulletSoundEffect, 0);
+						if (score > 0) { score--; }
+						break;
+					}
+				}
+				break;
+
+			case SDLK_LSHIFT:
+				player.defaultSpeed = { 0.7f, 0.7f };
 				break;
 
 			default:
@@ -215,6 +238,8 @@ void Game::Update()
 		
 		enemy.rect.x += (int)(enemy.speed.x * frameDelay);
 		enemy.rect.y += (int)(enemy.speed.y * frameDelay);
+
+		// player's bullet
 
 
 		/////////////////////////////
@@ -271,6 +296,7 @@ void Game::Update()
 			enemy.speed.y = 0;
 		}
 
+
 		if (checkWallCollision(enemy.rect) != NONE)
 		{
 			enemy.rect.x = (windowSize.w - enemy.rect.w) / 2;
@@ -279,7 +305,36 @@ void Game::Update()
 			enemy.speed.y = 0;
 		}
 
-		
+		// about bullet
+
+		for (int i = 0; i < MAXBULLET; i++)
+		{
+
+			// player bullet
+			if (playerBullet.onScreen[i])
+			{
+				// enemy - player bullet collision
+
+				if (checkCollision(enemy.rect, playerBullet.rect[i]))
+				{
+					enemy.rect.x = (windowSize.w - enemy.rect.w) / 2;
+					enemy.rect.y = 0;
+					score += 10;
+					playerBullet.onScreen[i] = false;
+					// TODO -> 총알로 맞췄을때 효과음
+				}
+			}
+			else
+			{
+				playerBullet.rect[i].x = player.rect.x + (player.rect.w / 2) - playerBullet.rect[i].w / 2;
+				playerBullet.rect[i].y = player.rect.y + playerBullet.rect[i].h;
+			}
+
+
+		}
+
+
+
 
 		/////////////////////////////
 
@@ -302,8 +357,15 @@ void Game::Update()
 		printTTF(tLife, 36, renderer, 255, 255, 255, 0, 10, 10);
 
 		char tScore[27] = { '\0' };
-		sprintf(tScore, "SCORE %d", 0);
+		sprintf(tScore, "SCORE %d", score);
 		printTTF(tScore, 36, renderer, 255, 255, 255, 0, 10, 56);
+
+		// bullet
+
+		for (int i = 0; i < MAXBULLET; i++)
+		{
+			if (playerBullet.onScreen[i]) { SDL_RenderCopy(renderer, playerBullet.texture, NULL, &playerBullet.rect[i]); }
+		}
 
 
 		SDL_RenderPresent(renderer);
@@ -317,7 +379,15 @@ void Game::Update()
 
 void Game::Finalize()
 {
+	SDL_DestroyTexture(playerBullet.texture);
+	SDL_DestroyTexture(enemyBullet.texture);
+	SDL_DestroyTexture(player.texture);
+	SDL_DestroyTexture(enemy.texture);
+	SDL_DestroyTexture(gameBackground.texture);
+
+
 	Mix_FreeMusic(inGameBGM);
+	Mix_FreeChunk(bulletSoundEffect);
 	Mix_CloseAudio();
 
 	SDL_DestroyRenderer(renderer);
