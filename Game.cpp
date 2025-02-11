@@ -10,9 +10,12 @@ void Game::Init()
 
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 4, 2048);
 	inGameBGM = Mix_LoadMUS("./asset/inGameBGM.ogg");
-	bulletSoundEffect = Mix_LoadWAV("./asset/shooting.wav");
+	bulletShootSoundEffect = Mix_LoadWAV("./asset/shooting.wav");
+	bulletHitSoundEffect = Mix_LoadWAV("./asset/coin.wav");
 
 	Mix_VolumeMusic(64);
+	Mix_VolumeChunk(bulletShootSoundEffect, 64);
+
 
 	SDL_Surface* surface;
 
@@ -187,7 +190,7 @@ void Game::Update()
 					if (playerBullet.onScreen[i] == false)
 					{
 						playerBullet.onScreen[i] = true;
-						Mix_PlayChannel(-1, bulletSoundEffect, 0);
+						Mix_PlayChannel(-1, bulletShootSoundEffect, 0);
 						if (score > 0) { score--; }
 						break;
 					}
@@ -321,7 +324,7 @@ void Game::Update()
 					enemy.rect.y = 0;
 					score += 10;
 					playerBullet.onScreen[i] = false;
-					// TODO -> 총알로 맞췄을때 효과음
+					Mix_PlayChannel(-1, bulletHitSoundEffect, 0);
 				}
 			}
 			else
@@ -387,7 +390,8 @@ void Game::Finalize()
 
 
 	Mix_FreeMusic(inGameBGM);
-	Mix_FreeChunk(bulletSoundEffect);
+	Mix_FreeChunk(bulletShootSoundEffect);
+	Mix_FreeChunk(bulletHitSoundEffect);
 	Mix_CloseAudio();
 
 	SDL_DestroyRenderer(renderer);

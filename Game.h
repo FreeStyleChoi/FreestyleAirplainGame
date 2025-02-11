@@ -47,7 +47,8 @@ private:
 	BulletEntity enemyBullet{};
 
 	Mix_Music* inGameBGM;
-	Mix_Chunk* bulletSoundEffect;
+	Mix_Chunk* bulletShootSoundEffect;
+	Mix_Chunk* bulletHitSoundEffect;
 	
 	int score;
 
