@@ -1,5 +1,11 @@
 #include "Game.h"
 
+///////////////////////////////////
+// TODO: 적이 랜덤한 위치에서 생성 //
+///////////////////////////////////
+
+
+
 void Game::Init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -14,7 +20,7 @@ void Game::Init()
 	bulletHitSoundEffect = Mix_LoadWAV("./asset/coin.wav");
 
 	Mix_VolumeMusic(64);
-	Mix_VolumeChunk(bulletShootSoundEffect, 64);
+	Mix_VolumeChunk(bulletShootSoundEffect, 32);
 
 
 	SDL_Surface* surface;
@@ -83,8 +89,8 @@ void Game::Init()
 		playerBullet.rect[i].y = player.rect.y + playerBullet.rect[i].h;
 		playerBullet.speed.x = 0;
 		playerBullet.speed.y = 0;
-		playerBullet.defaultSpeed.x = 1.4;
-		playerBullet.defaultSpeed.y = 0;
+		playerBullet.defaultSpeed.x = 0;
+		playerBullet.defaultSpeed.y = -1.4;
 		playerBullet.onScreen[i] = false;
 	}
 
@@ -326,6 +332,18 @@ void Game::Update()
 					playerBullet.onScreen[i] = false;
 					Mix_PlayChannel(-1, bulletHitSoundEffect, 0);
 				}
+
+				// player bullet - wall
+
+				if (checkWallCollision(playerBullet.rect[i]) != NONE)
+				{
+					playerBullet.onScreen[i] = false;
+				}
+
+				playerBullet.speed = playerBullet.defaultSpeed;
+
+				playerBullet.rect[i].x += playerBullet.speed.x * frameDelay;
+				playerBullet.rect[i].y += playerBullet.speed.y * frameDelay;
 			}
 			else
 			{
