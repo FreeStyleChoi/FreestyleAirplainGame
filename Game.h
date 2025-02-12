@@ -14,6 +14,7 @@ class Game
 public:
 
 	void Init();
+	void Setting();
 	void Update();
 	void Finalize();
 
@@ -23,6 +24,8 @@ public:
 	bool checkCollision(SDL_Rect rect1, SDL_Rect rect2);
 	Side checkWallCollision(SDL_Rect rect);
 
+	bool restart = false;
+
 private:
 
 	SDL_Rect windowSize{ 0, 0, 720, 960 };
@@ -30,7 +33,7 @@ private:
 	SDL_Window* window = NULL;
 	SDL_Renderer* renderer = NULL;
 	SDL_Event event;
-
+	 
 	unsigned FPS = 100;
 	unsigned frameDelay = 1000 / FPS;
 	Uint32 frameStart;
@@ -49,6 +52,7 @@ private:
 	Mix_Music* inGameBGM;
 	Mix_Chunk* bulletShootSoundEffect;
 	Mix_Chunk* bulletHitSoundEffect;
+	Mix_Chunk* gameoverEffect;
 	
 	int score;
 

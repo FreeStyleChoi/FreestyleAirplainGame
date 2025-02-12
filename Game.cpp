@@ -1,8 +1,8 @@
 #include "Game.h"
 
-////////////////////////////
-// TODO: 적이 총 뿅뿅 쏘기 //
-////////////////////////////
+////////////////////////////////////////////////////////
+// TODO: 메인화면 만들기
+////////////////////////////////////////////////////////
 
 
 
@@ -18,10 +18,16 @@ void Game::Init()
 	inGameBGM = Mix_LoadMUS("./asset/inGameBGM.ogg");
 	bulletShootSoundEffect = Mix_LoadWAV("./asset/shooting.wav");
 	bulletHitSoundEffect = Mix_LoadWAV("./asset/coin.wav");
+	gameoverEffect = Mix_LoadWAV("./asset/gameover.wav");
 
 	Mix_VolumeMusic(64);
 	Mix_VolumeChunk(bulletShootSoundEffect, 32);
+}
 
+void Game::Setting()
+{
+
+	isRunning = true;
 
 	SDL_Surface* surface;
 
@@ -388,7 +394,7 @@ void Game::Update()
 		// lunch enemy bullet
 		for (int i = 0; i < MAXBULLET; i++)
 		{
-			if (enemyBullet.onScreen[i] == false && (frameCount * frameDelay) % 1000 == 0)
+			if (enemyBullet.onScreen[i] == false && (frameCount * frameDelay) % 1250 == 0)
 			{
 				enemyBullet.onScreen[i] = true;
 				Mix_PlayChannel(-1, bulletShootSoundEffect, 0);
@@ -422,8 +428,23 @@ void Game::Update()
 		sprintf(tScore, "SCORE %d", score);
 		printTTF(tScore, 36, renderer, 255, 255, 255, 0, 10, 56);
 
+		if (player.life <= 0)
+		{
+			char tGameover[10] = { "GAME OVER" };
+			printTTF(tGameover, 60, renderer, 255, 0, 0, 0, (windowSize.w / 2) - ((60 / 2) * (9 / 2)), (windowSize.h / 2) - (60 / 2));
+			Mix_PauseMusic();
+			Mix_PlayChannel(-1, gameoverEffect, 0);
+			isRunning = false;
+			restart = true;
+		}
+		else
+			restart = false;
+
 
 		SDL_RenderPresent(renderer);
+
+		if (player.life <= 0)
+			SDL_Delay(1500); // delay for game over sound effect
 
 		////////////////////////////
 
@@ -446,6 +467,7 @@ void Game::Finalize()
 	Mix_FreeMusic(inGameBGM);
 	Mix_FreeChunk(bulletShootSoundEffect);
 	Mix_FreeChunk(bulletHitSoundEffect);
+	Mix_FreeChunk(gameoverEffect);
 	Mix_CloseAudio();
 
 	SDL_DestroyRenderer(renderer);
