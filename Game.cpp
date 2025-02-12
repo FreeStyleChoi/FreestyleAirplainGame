@@ -1,8 +1,8 @@
 #include "Game.h"
 
-///////////////////////////////////
-// TODO: 적이 랜덤한 위치에서 생성 //
-///////////////////////////////////
+////////////////////////////
+// TODO: 적이 총 뿅뿅 쏘기 //
+////////////////////////////
 
 
 
@@ -104,20 +104,24 @@ void Game::Init()
 	{
 		enemyBullet.rect[i].w = 16;
 		enemyBullet.rect[i].h = 16;
-		enemyBullet.rect[i].x = player.rect.x + ((player.rect.x / 2) - (enemyBullet.rect[i].w / 2));
-		enemyBullet.rect[i].y = player.rect.y - enemyBullet.rect[i].h;
-		enemyBullet.speed.x = 1.6;
+		enemyBullet.rect[i].x = enemy.rect.x + ((enemy.rect.w / 2) - (enemyBullet.rect[i].w / 2));
+		enemyBullet.rect[i].y = enemy.rect.y - enemyBullet.rect[i].h;
+		enemyBullet.speed.x = 0;
 		enemyBullet.speed.y = 0;
 		enemyBullet.defaultSpeed.x = 0;
-		enemyBullet.defaultSpeed.y = 0;
+		enemyBullet.defaultSpeed.y = 1.4;
 		enemyBullet.onScreen[i] = false;
 	}
 
 	SDL_FreeSurface(surface);
+
+	// rendom number
+	srand((unsigned int)time(NULL) * rand());
 }
 
 void Game::Update()
 {
+	unsigned int frameCount = 1;
 	Mix_PlayMusic(inGameBGM, -1);
 	while (isRunning)
 	{
@@ -248,9 +252,6 @@ void Game::Update()
 		enemy.rect.x += (int)(enemy.speed.x * frameDelay);
 		enemy.rect.y += (int)(enemy.speed.y * frameDelay);
 
-		// player's bullet
-
-
 		/////////////////////////////
 
 		// player
@@ -299,7 +300,7 @@ void Game::Update()
 
 			// enemy
 
-			enemy.rect.x = (windowSize.w - enemy.rect.w) / 2;
+			enemy.rect.x = rand() % (windowSize.w - enemy.rect.w);
 			enemy.rect.y = 0;
 			enemy.speed.x = 0;
 			enemy.speed.y = 0;
@@ -308,7 +309,7 @@ void Game::Update()
 
 		if (checkWallCollision(enemy.rect) != NONE)
 		{
-			enemy.rect.x = (windowSize.w - enemy.rect.w) / 2;
+			enemy.rect.x = rand() % (windowSize.w - enemy.rect.w);
 			enemy.rect.y = 0;
 			enemy.speed.x = 0;
 			enemy.speed.y = 0;
@@ -326,7 +327,7 @@ void Game::Update()
 
 				if (checkCollision(enemy.rect, playerBullet.rect[i]))
 				{
-					enemy.rect.x = (windowSize.w - enemy.rect.w) / 2;
+					enemy.rect.x = rand() % (windowSize.w - enemy.rect.w);
 					enemy.rect.y = 0;
 					score += 10;
 					playerBullet.onScreen[i] = false;
@@ -335,7 +336,7 @@ void Game::Update()
 
 				// player bullet - wall
 
-				if (checkWallCollision(playerBullet.rect[i]) != NONE)
+				else if (checkWallCollision(playerBullet.rect[i]) != NONE)
 				{
 					playerBullet.onScreen[i] = false;
 				}
@@ -350,12 +351,51 @@ void Game::Update()
 				playerBullet.rect[i].x = player.rect.x + (player.rect.w / 2) - playerBullet.rect[i].w / 2;
 				playerBullet.rect[i].y = player.rect.y + playerBullet.rect[i].h;
 			}
+			
+			///////////////////////////////////////////////
 
+			// enemy bullet
 
+			if (checkCollision(player.rect, enemyBullet.rect[i]))
+			{
+				enemyBullet.onScreen[i] = false;
+				if (player.life == 0) { printf("game over!\n"); }
+				else
+				{
+					player.life--;
+					printf("player life : %d\n", player.life);
+				}
+			}
+
+			else if (checkWallCollision(enemyBullet.rect[i]) != NONE)
+			{
+				enemyBullet.onScreen[i] = false;
+			}
+
+			if (!enemyBullet.onScreen[i])
+			{
+				enemyBullet.rect[i].x = enemy.rect.x + ((enemy.rect.w / 2) - (enemyBullet.rect[i].w / 2));
+				enemyBullet.rect[i].y = enemy.rect.y - enemyBullet.rect[i].h;
+			}
+
+			enemyBullet.speed = enemyBullet.defaultSpeed;
+			enemyBullet.rect[i].x += enemyBullet.speed.x * frameDelay;
+			enemyBullet.rect[i].y += enemyBullet.speed.y * frameDelay;
+
+			
 		}
 
-
-
+		// lunch enemy bullet
+		for (int i = 0; i < MAXBULLET; i++)
+		{
+			if (enemyBullet.onScreen[i] == false && (frameCount * frameDelay) % 1000 == 0)
+			{
+				enemyBullet.onScreen[i] = true;
+				Mix_PlayChannel(-1, bulletShootSoundEffect, 0);
+				printf("enemy bullet lunch\n");
+				break;
+			}
+		}
 
 		/////////////////////////////
 
@@ -369,6 +409,7 @@ void Game::Update()
 		for (int i = 0; i < MAXBULLET; i++)
 		{
 			if (playerBullet.onScreen[i]) { SDL_RenderCopy(renderer, playerBullet.texture, NULL, &playerBullet.rect[i]); }
+			if (enemyBullet.onScreen[i]) { SDL_RenderCopy(renderer, enemyBullet.texture, NULL, &enemyBullet.rect[i]); }
 		}
 
 		// font
@@ -381,13 +422,6 @@ void Game::Update()
 		sprintf(tScore, "SCORE %d", score);
 		printTTF(tScore, 36, renderer, 255, 255, 255, 0, 10, 56);
 
-		// bullet
-
-		for (int i = 0; i < MAXBULLET; i++)
-		{
-			if (playerBullet.onScreen[i]) { SDL_RenderCopy(renderer, playerBullet.texture, NULL, &playerBullet.rect[i]); }
-		}
-
 
 		SDL_RenderPresent(renderer);
 
@@ -395,6 +429,8 @@ void Game::Update()
 
 		frameTime = SDL_GetTicks64() - frameStart;
 		if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
+
+		frameCount++;
 	}
 }
 

@@ -52,5 +52,6 @@ private:
 	
 	int score;
 
+	int random;
 };
 
