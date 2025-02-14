@@ -1,7 +1,7 @@
 #include "Game.h"
 
 ////////////////////////////////////////////////////////
-// TODO: 메인화면 만들기
+// TODO: 게임오버 시 이벤트 무시
 ////////////////////////////////////////////////////////
 
 
@@ -15,6 +15,67 @@ void Game::Init()
 	if (TTF_Init() == -1) { exit(-1); }
 
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 4, 2048);
+}
+
+
+void Game::MenuScreen()
+{
+	bool isRunning = true;
+	bool Exit = false;
+	SDL_Surface* surface = IMG_Load("./asset/mainBackground.png");
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
+
+	SDL_Rect rect{ 0, 0, windowSize.w, windowSize.h };
+
+	while (isRunning)
+	{
+		SDL_PollEvent(&event);
+		switch (event.type)
+		{
+		case SDL_QUIT:
+			isRunning = false;
+			Exit = true;
+			break;
+		case SDL_KEYDOWN:
+			switch (event.key.keysym.sym)
+			{
+			case SDLK_ESCAPE:
+				isRunning = false;
+				Exit = true;
+				break;
+			default:
+				isRunning = false;
+				break;
+			}
+		default:
+			break;
+		}
+		SDL_RenderClear(renderer);
+		SDL_RenderCopy(renderer, texture, NULL, &rect);
+		SDL_RenderPresent(renderer);
+	}
+
+	SDL_DestroyTexture(texture);
+
+	if (Exit)
+	{
+		SDL_CloseAudio();
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyTexture(texture);
+		SDL_Quit();
+		exit(0);
+	}
+	else
+		return;
+}
+
+
+void Game::Setting()
+{
+	isRunning = true;
+
+	// music & sound effect
 	inGameBGM = Mix_LoadMUS("./asset/inGameBGM.ogg");
 	bulletShootSoundEffect = Mix_LoadWAV("./asset/shooting.wav");
 	bulletHitSoundEffect = Mix_LoadWAV("./asset/coin.wav");
@@ -22,16 +83,11 @@ void Game::Init()
 
 	Mix_VolumeMusic(64);
 	Mix_VolumeChunk(bulletShootSoundEffect, 32);
-}
 
-void Game::Setting()
-{
-
-	isRunning = true;
+	// ingame background
 
 	SDL_Surface* surface;
 
-	// ingame background
 	surface = IMG_Load("./asset/backGroundFinal.png");
 	gameBackground.texture = SDL_CreateTextureFromSurface(renderer, surface);
 
@@ -123,12 +179,14 @@ void Game::Setting()
 
 	// rendom number
 	srand((unsigned int)time(NULL) * rand());
+
+	// play music
+	Mix_PlayMusic(inGameBGM, -1);
 }
 
 void Game::Update()
 {
 	unsigned int frameCount = 1;
-	Mix_PlayMusic(inGameBGM, -1);
 	while (isRunning)
 	{
 		frameStart = SDL_GetTicks64();
@@ -443,9 +501,6 @@ void Game::Update()
 
 		SDL_RenderPresent(renderer);
 
-		if (player.life <= 0)
-			SDL_Delay(1500); // delay for game over sound effect
-
 		////////////////////////////
 
 		frameTime = SDL_GetTicks64() - frameStart;
@@ -453,6 +508,8 @@ void Game::Update()
 
 		frameCount++;
 	}
+	if (player.life <= 0)
+		SDL_Delay(1500); // delay for game over sound effect
 }
 
 void Game::Finalize()

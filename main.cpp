@@ -7,6 +7,7 @@ int main(int argc, char** argv)
 	game.Init();
 	do
 	{
+		game.MenuScreen();
 		game.Setting();
 		game.Update();
 	} while (game.restart);

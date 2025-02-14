@@ -15,6 +15,7 @@ public:
 
 	void Init();
 	void Setting();
+	void MenuScreen();
 	void Update();
 	void Finalize();
 
