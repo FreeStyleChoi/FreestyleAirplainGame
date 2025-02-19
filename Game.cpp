@@ -1,7 +1,7 @@
 #include "Game.h"
 
 ////////////////////////////////////////////////////////
-// TODO: 게임오버 시 이벤트 무시
+// TODO: 게임오버 시 이벤트 처리
 ////////////////////////////////////////////////////////
 
 
@@ -28,6 +28,8 @@ void Game::MenuScreen()
 
 	SDL_Rect rect{ 0, 0, windowSize.w, windowSize.h };
 
+	event.key.keysym.sym = SDLK_UNKNOWN;
+
 	while (isRunning)
 	{
 		SDL_PollEvent(&event);
@@ -46,6 +48,7 @@ void Game::MenuScreen()
 				break;
 			default:
 				isRunning = false;
+				event.key.keysym.sym = SDLK_UNKNOWN;
 				break;
 			}
 		default:
@@ -507,9 +510,48 @@ void Game::Update()
 		if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
 
 		frameCount++;
+
+		if (player.life <= 0)
+		{
+			Uint32 GOframeTime;
+			Uint32 GOframeStart;
+			for (int i = 1; i < 2000 / frameDelay; i++)
+			{
+				GOframeStart = SDL_GetTicks64();
+
+				if (i * frameDelay % 2001 == 2000)
+				{
+					return; // 게임오버 효과음을 위한 1.5초 대기
+				}
+
+				// 게임오버 이펙트 시 이벤트 처리 작업
+				SDL_PollEvent(&event);
+				switch (event.type)
+				{
+				case SDL_QUIT:
+					restart = false;
+					return;
+					break;
+				case SDL_KEYDOWN:
+					switch (event.key.keysym.sym)
+					{
+					case SDLK_ESCAPE:
+						restart = false;
+						return;
+						break;
+					default:
+						break;
+					}
+				default:
+					break;
+				}
+
+				GOframeTime = SDL_GetTicks64() - GOframeStart;
+				if (frameDelay > GOframeTime) SDL_Delay(frameDelay - GOframeTime);
+			}
+		}
+
 	}
-	if (player.life <= 0)
-		SDL_Delay(1500); // delay for game over sound effect
 }
 
 void Game::Finalize()
