@@ -126,7 +126,7 @@ void Game::Setting()
 	player.defaultSpeed.x = 0.7;
 	player.defaultSpeed.y = 0.7;
 	player.onScreen = true;
-	player.life = 3;
+	player.life = 10;
 	score = 0;
 
 	SDL_FreeSurface(surface);
@@ -452,7 +452,7 @@ void Game::Update()
 		// lunch enemy bullet
 		for (int i = 0; i < MAXBULLET; i++)
 		{
-			if (enemyBullet.onScreen[i] == false && (frameCount * frameDelay) % 1250 == 0)
+			if (enemyBullet.onScreen[i] == false && (frameCount * frameDelay) % 500 == 0)
 			{
 				enemyBullet.onScreen[i] = true;
 				Mix_PlayChannel(-1, bulletShootSoundEffect, 0);
