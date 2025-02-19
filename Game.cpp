@@ -30,6 +30,9 @@ void Game::MenuScreen()
 
 	event.key.keysym.sym = SDLK_UNKNOWN;
 
+	Mix_Music* menuBGM = Mix_LoadMUS("./asset/menuBGM.ogg");
+
+	Mix_PlayMusic(menuBGM, -1);
 	while (isRunning)
 	{
 		SDL_PollEvent(&event);
@@ -59,6 +62,8 @@ void Game::MenuScreen()
 		SDL_RenderPresent(renderer);
 	}
 
+	Mix_PauseMusic();
+	Mix_FreeMusic(menuBGM);
 	SDL_DestroyTexture(texture);
 
 	if (Exit)
@@ -358,12 +363,8 @@ void Game::Update()
 
 		if (checkCollision(player.rect, enemy.rect))
 		{
-			if (player.life == 0) { printf("game over!\n"); }
-			else
-			{
+			if (!player.life == 0)
 				player.life--;
-				printf("player life : %d\n", player.life);
-			}
 
 			// enemy
 
@@ -426,12 +427,8 @@ void Game::Update()
 			if (checkCollision(player.rect, enemyBullet.rect[i]))
 			{
 				enemyBullet.onScreen[i] = false;
-				if (player.life == 0) { printf("game over!\n"); }
-				else
-				{
+				if (!player.life == 0)
 					player.life--;
-					printf("player life : %d\n", player.life);
-				}
 			}
 
 			else if (checkWallCollision(enemyBullet.rect[i]) != NONE)
@@ -459,7 +456,6 @@ void Game::Update()
 			{
 				enemyBullet.onScreen[i] = true;
 				Mix_PlayChannel(-1, bulletShootSoundEffect, 0);
-				printf("enemy bullet lunch\n");
 				break;
 			}
 		}

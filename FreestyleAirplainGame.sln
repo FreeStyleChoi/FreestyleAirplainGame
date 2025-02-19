@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreestyleAirplainGame", "FreestyleAirplainGame.vcxproj", "{1D938C2E-8984-445D-885D-E87B5D919E03}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "2025_Deploy", "DEPLOYS\2025_Deploy\2025_Deploy.vdproj", "{8037679C-F4E8-4450-9C5E-561F5139C82F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{1D938C2E-8984-445D-885D-E87B5D919E03}.Release|x64.Build.0 = Release|x64
 		{1D938C2E-8984-445D-885D-E87B5D919E03}.Release|x86.ActiveCfg = Release|Win32
 		{1D938C2E-8984-445D-885D-E87B5D919E03}.Release|x86.Build.0 = Release|Win32
+		{8037679C-F4E8-4450-9C5E-561F5139C82F}.Debug|x64.ActiveCfg = Debug
+		{8037679C-F4E8-4450-9C5E-561F5139C82F}.Debug|x86.ActiveCfg = Debug
+		{8037679C-F4E8-4450-9C5E-561F5139C82F}.Release|x64.ActiveCfg = Release
+		{8037679C-F4E8-4450-9C5E-561F5139C82F}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
