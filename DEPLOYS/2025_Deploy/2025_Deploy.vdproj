@@ -153,7 +153,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\2025_Deploy.msi"
+        "OutputFilename" = "8:Release\\2025-Setup.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -170,6 +170,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
     }
@@ -620,7 +628,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:2025 Airplain Game"
         "ProductCode" = "8:{6267A462-4B4E-40C0-A37C-FA0200CFA332}"
-        "PackageCode" = "8:{6DFEE7E0-9FA0-45A5-96B9-FC83E72249A8}"
+        "PackageCode" = "8:{D5AE1712-26BD-4168-A772-93FCA2432923}"
         "UpgradeCode" = "8:{25ED99B8-D583-451A-ABC1-581C3A6FE333}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
