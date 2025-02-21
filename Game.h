@@ -35,7 +35,7 @@ private:
 	SDL_Renderer* renderer = NULL;
 	SDL_Event event;
 	 
-	unsigned FPS = 100;
+	unsigned FPS = 120;
 	unsigned frameDelay = 1000 / FPS;
 	Uint32 frameStart;
 	Uint32 frameTime;

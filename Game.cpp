@@ -33,6 +33,7 @@ void Game::MenuScreen()
 	Mix_Music* menuBGM = Mix_LoadMUS("./asset/menuBGM.ogg");
 
 	Mix_PlayMusic(menuBGM, -1);
+
 	while (isRunning)
 	{
 		SDL_PollEvent(&event);
@@ -50,15 +51,38 @@ void Game::MenuScreen()
 				Exit = true;
 				break;
 			default:
+				break;
+			}
+			break;
+		case SDL_KEYUP:                           //////
+			switch (event.key.keysym.sym)
+			{
+			case SDLK_LEFT:
+				if (FPS > 30)
+					FPS -= 10;
+				break;
+			case SDLK_RIGHT:
+				if (FPS < 250)
+					FPS += 10;
+				break;
+			default:
 				isRunning = false;
 				event.key.keysym.sym = SDLK_UNKNOWN;
 				break;
 			}
+			break;
 		default:
 			break;
 		}
+
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, texture, NULL, &rect);
+
+		char tFps[8] = { '\0' };
+		sprintf(tFps, "FPS %d", FPS);
+		printTTF(tFps, 36, renderer, 255, 255, 255, 0, 10, 10);
+		frameDelay = 1000 / FPS;
+
 		SDL_RenderPresent(renderer);
 	}
 
@@ -477,13 +501,17 @@ void Game::Update()
 
 		// font
 
+		char tFps[8] = { '\0' };
+		sprintf(tFps, "FPS %d", FPS);
+		printTTF(tFps, 36, renderer, 255, 255, 255, 0, 10, 10);
+
 		char tLife[9] = { '\0' };
 		sprintf(tLife, "LIFE %d", player.life);
-		printTTF(tLife, 36, renderer, 255, 255, 255, 0, 10, 10);
+		printTTF(tLife, 36, renderer, 255, 255, 255, 0, 10, 56);
 
 		char tScore[27] = { '\0' };
 		sprintf(tScore, "SCORE %d", score);
-		printTTF(tScore, 36, renderer, 255, 255, 255, 0, 10, 56);
+		printTTF(tScore, 36, renderer, 255, 255, 255, 0, 10, 102);
 
 		if (player.life <= 0)
 		{
