@@ -15,6 +15,11 @@ void Game::Init()
 	if (TTF_Init() == -1) { exit(-1); }
 
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 4, 2048);
+
+	SDL_Joystick* joystick = NULL;
+	int numJoysticks = SDL_NumJoysticks();
+	joystick = SDL_JoystickOpen(0);
+	const char* asdf = SDL_JoystickName(joystick);
 }
 
 
@@ -33,7 +38,7 @@ void Game::MenuScreen()
 	Mix_Music* menuBGM = Mix_LoadMUS("./asset/menuBGM.ogg");
 
 	Mix_PlayMusic(menuBGM, -1);
-
+	int asdf=0;
 	while (isRunning)
 	{
 		SDL_PollEvent(&event);
@@ -51,10 +56,12 @@ void Game::MenuScreen()
 				Exit = true;
 				break;
 			default:
+				isRunning = false;
+				event.key.keysym.sym = SDLK_UNKNOWN;
 				break;
 			}
 			break;
-		case SDL_KEYUP:                           //////
+		case SDL_KEYUP:
 			switch (event.key.keysym.sym)
 			{
 			case SDLK_LEFT:
@@ -66,10 +73,12 @@ void Game::MenuScreen()
 					FPS += 10;
 				break;
 			default:
-				isRunning = false;
-				event.key.keysym.sym = SDLK_UNKNOWN;
 				break;
 			}
+			break;
+		case SDL_JOYBUTTONDOWN:
+			isRunning = false;
+			event.key.keysym.sym = SDLK_UNKNOWN;
 			break;
 		default:
 			break;
@@ -241,7 +250,7 @@ void Game::Update()
 				break;
 
 			case SDLK_w:
-			case SDLK_UP:			
+			case SDLK_UP:
 				player.speed.y = player.defaultSpeed.y * -1;
 				break;
 			case SDLK_a:
@@ -311,6 +320,47 @@ void Game::Update()
 				break;
 			}
 
+			break;
+
+		case SDL_JOYAXISMOTION:
+			if (event.jaxis.axis == 0) // move X
+			{
+				if (event.jaxis.value > 0)
+					player.speed.x = player.defaultSpeed.x;
+
+				else if (event.jaxis.value < 0)
+					player.speed.x = player.defaultSpeed.x * -1;
+
+				else
+					player.speed.x = 0;
+			}
+			if (event.jaxis.axis == 1) // move Y
+			{
+				if (event.jaxis.value > 0)
+					player.speed.y = player.defaultSpeed.y;
+
+				else if (event.jaxis.value < 0)
+					player.speed.y = player.defaultSpeed.y * -1;
+
+				else
+					player.speed.y = 0;
+			}
+			break;
+
+		case SDL_JOYBUTTONDOWN:
+			if (event.jbutton.button == 0)
+			{
+				for (int i = 0; i < MAXBULLET; i++)
+				{
+					if (playerBullet.onScreen[i] == false)
+					{
+						playerBullet.onScreen[i] = true;
+						Mix_PlayChannel(-1, bulletShootSoundEffect, 0);
+						if (score > 0) { score--; }
+						break;
+					}
+				}
+			}
 			break;
 
 		default:
