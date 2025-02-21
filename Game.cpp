@@ -16,7 +16,6 @@ void Game::Init()
 
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 4, 2048);
 
-	SDL_Joystick* joystick = NULL;
 	int numJoysticks = SDL_NumJoysticks();
 	joystick = SDL_JoystickOpen(0);
 	const char* asdf = SDL_JoystickName(joystick);
@@ -56,8 +55,6 @@ void Game::MenuScreen()
 				Exit = true;
 				break;
 			default:
-				isRunning = false;
-				event.key.keysym.sym = SDLK_UNKNOWN;
 				break;
 			}
 			break;
@@ -73,6 +70,9 @@ void Game::MenuScreen()
 					FPS += 10;
 				break;
 			default:
+
+				isRunning = false;
+				event.key.keysym.sym = SDLK_UNKNOWN;
 				break;
 			}
 			break;
@@ -102,6 +102,7 @@ void Game::MenuScreen()
 	if (Exit)
 	{
 		SDL_CloseAudio();
+		SDL_JoystickClose(joystick);
 		SDL_DestroyRenderer(renderer);
 		SDL_DestroyTexture(texture);
 		SDL_Quit();
@@ -346,9 +347,9 @@ void Game::Update()
 					player.speed.y = 0;
 			}
 			break;
-
+			
 		case SDL_JOYBUTTONDOWN:
-			if (event.jbutton.button == 0)
+			if (event.jbutton.button != 7)
 			{
 				for (int i = 0; i < MAXBULLET; i++)
 				{
@@ -642,6 +643,8 @@ void Game::Finalize()
 	Mix_FreeChunk(bulletHitSoundEffect);
 	Mix_FreeChunk(gameoverEffect);
 	Mix_CloseAudio();
+
+	SDL_JoystickClose(joystick);
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);

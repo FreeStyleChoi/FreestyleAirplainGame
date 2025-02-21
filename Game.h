@@ -54,6 +54,8 @@ private:
 	Mix_Chunk* bulletShootSoundEffect;
 	Mix_Chunk* bulletHitSoundEffect;
 	Mix_Chunk* gameoverEffect;
+
+	SDL_Joystick* joystick = NULL;
 	
 	int score;
 
