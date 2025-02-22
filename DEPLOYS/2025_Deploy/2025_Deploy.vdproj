@@ -57,6 +57,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6C9D90CE1625459C9D1A82659FA7ED06"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_785815A8B7D74A5EB9A189B2F077D9F1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -146,6 +152,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -324,6 +338,26 @@
             {
             "SourcePath" = "8:..\\..\\asset\\player.png"
             "TargetName" = "8:player.png"
+            "Tag" = "8:"
+            "Folder" = "8:_6BC7A797BD42428AB462297340A1057D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6C9D90CE1625459C9D1A82659FA7ED06"
+            {
+            "SourcePath" = "8:..\\..\\asset\\damagedEffect.png"
+            "TargetName" = "8:damagedEffect.png"
             "Tag" = "8:"
             "Folder" = "8:_6BC7A797BD42428AB462297340A1057D"
             "Condition" = "8:"

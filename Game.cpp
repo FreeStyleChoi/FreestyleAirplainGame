@@ -147,6 +147,18 @@ void Game::Setting()
 
 	SDL_FreeSurface(surface);
 
+	// damage effect
+
+	surface = IMG_Load("./asset/damagedEffect.png");
+	damageEffect.texture = SDL_CreateTextureFromSurface(renderer, surface);
+	damageEffect.rect.x = 0;
+	damageEffect.rect.y = 0;
+	damageEffect.rect.w = windowSize.w;
+	damageEffect.rect.h = windowSize.h;
+	damageEffect.onScreen = false;
+
+	SDL_FreeSurface(surface);
+
 	// player
 	surface = IMG_Load("./asset/player.png");
 	player.texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -229,6 +241,10 @@ void Game::Setting()
 void Game::Update()
 {
 	unsigned int frameCount = 1;
+
+	bool isDamaged = false;
+	Uint32 damagedT = 0;
+
 	while (isRunning)
 	{
 		frameStart = SDL_GetTicks64();
@@ -370,6 +386,22 @@ void Game::Update()
 
 		/////////////////////////////
 
+		// damage effect
+		if (isDamaged == true)
+		{
+			damageEffect.onScreen = true;
+			damagedT = frameCount;
+			isDamaged = false;
+		}
+
+		
+
+		if (damageEffect.onScreen == true && (frameCount * frameDelay) - (damagedT * frameDelay) >= 500)
+		{
+			damageEffect.onScreen = false;
+			damagedT = 0;
+		}
+
 		// ingmae background
 		for (int i = 0; i < 2; i++)
 		{
@@ -439,7 +471,10 @@ void Game::Update()
 		if (checkCollision(player.rect, enemy.rect))
 		{
 			if (!player.life == 0)
+			{
 				player.life--;
+				isDamaged = true;
+			}
 
 			// enemy
 
@@ -503,7 +538,10 @@ void Game::Update()
 			{
 				enemyBullet.onScreen[i] = false;
 				if (!player.life == 0)
+				{
 					player.life--;
+					isDamaged = true;
+				}
 			}
 
 			else if (checkWallCollision(enemyBullet.rect[i]) != NONE)
@@ -549,6 +587,8 @@ void Game::Update()
 			if (playerBullet.onScreen[i]) { SDL_RenderCopy(renderer, playerBullet.texture, NULL, &playerBullet.rect[i]); }
 			if (enemyBullet.onScreen[i]) { SDL_RenderCopy(renderer, enemyBullet.texture, NULL, &enemyBullet.rect[i]); }
 		}
+
+		if (damageEffect.onScreen == true) { SDL_RenderCopy(renderer, damageEffect.texture, NULL, &damageEffect.rect); }
 
 		// font
 
@@ -635,6 +675,7 @@ void Game::Finalize()
 	SDL_DestroyTexture(enemyBullet.texture);
 	SDL_DestroyTexture(player.texture);
 	SDL_DestroyTexture(enemy.texture);
+	SDL_DestroyTexture(damageEffect.texture);
 	SDL_DestroyTexture(gameBackground.texture);
 
 

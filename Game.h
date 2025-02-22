@@ -44,6 +44,8 @@ private:
 
 	ScrollingEntity gameBackground{};
 
+	MotionlessEntity damageEffect{};
+
 	Entity player{};
 	Entity enemy{};
 
