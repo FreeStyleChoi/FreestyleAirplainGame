@@ -147,21 +147,11 @@ void Game::Setting()
 
 	SDL_FreeSurface(surface);
 
-	// damage effect
-
-	surface = IMG_Load("./asset/damagedEffect.png");
-	damageEffect.texture = SDL_CreateTextureFromSurface(renderer, surface);
-	damageEffect.rect.x = 0;
-	damageEffect.rect.y = 0;
-	damageEffect.rect.w = windowSize.w;
-	damageEffect.rect.h = windowSize.h;
-	damageEffect.onScreen = false;
-
-	SDL_FreeSurface(surface);
-
 	// player
 	surface = IMG_Load("./asset/player.png");
 	player.texture = SDL_CreateTextureFromSurface(renderer, surface);
+	surface = IMG_Load("./asset/damagedEffect.png");
+	damagedEffect = SDL_CreateTextureFromSurface(renderer, surface);
 
 	player.rect.w = 46;
 	player.rect.h = 43;
@@ -386,22 +376,6 @@ void Game::Update()
 
 		/////////////////////////////
 
-		// damage effect
-		if (isDamaged == true)
-		{
-			damageEffect.onScreen = true;
-			damagedT = frameCount;
-			isDamaged = false;
-		}
-
-		
-
-		if (damageEffect.onScreen == true && (frameCount * frameDelay) - (damagedT * frameDelay) >= 500)
-		{
-			damageEffect.onScreen = false;
-			damagedT = 0;
-		}
-
 		// ingmae background
 		for (int i = 0; i < 2; i++)
 		{
@@ -579,7 +553,26 @@ void Game::Update()
 		
 		for (int i = 0; i < 2; i++) { SDL_RenderCopy(renderer, gameBackground.texture, NULL, &gameBackground.rect[i]); }
 
-		if (player.onScreen == true) { SDL_RenderCopy(renderer, player.texture, NULL, &player.rect); }
+		if (player.onScreen == true)
+		{
+			if (isDamaged == true)
+			{
+				doingDamageE = true;
+				damagedT = frameCount;
+				isDamaged = false;
+			}
+
+			if (doingDamageE == true && (frameCount * frameDelay) - (damagedT * frameDelay) >= 500)
+			{
+				doingDamageE = false;
+				damagedT = 0;
+			}
+
+			if (doingDamageE == true)
+				SDL_RenderCopy(renderer, damagedEffect, NULL, &player.rect);
+			else
+				SDL_RenderCopy(renderer, player.texture, NULL, &player.rect);
+		}
 		if (enemy.onScreen == true) { SDL_RenderCopy(renderer, enemy.texture, NULL, &enemy.rect); }
 
 		for (int i = 0; i < MAXBULLET; i++)
@@ -587,8 +580,6 @@ void Game::Update()
 			if (playerBullet.onScreen[i]) { SDL_RenderCopy(renderer, playerBullet.texture, NULL, &playerBullet.rect[i]); }
 			if (enemyBullet.onScreen[i]) { SDL_RenderCopy(renderer, enemyBullet.texture, NULL, &enemyBullet.rect[i]); }
 		}
-
-		if (damageEffect.onScreen == true) { SDL_RenderCopy(renderer, damageEffect.texture, NULL, &damageEffect.rect); }
 
 		// font
 
@@ -628,6 +619,8 @@ void Game::Update()
 
 		if (player.life <= 0)
 		{
+			doingDamageE = false;
+
 			Uint32 GOframeTime;
 			Uint32 GOframeStart;
 			for (int i = 1; i < 2000 / frameDelay; i++)
@@ -675,7 +668,7 @@ void Game::Finalize()
 	SDL_DestroyTexture(enemyBullet.texture);
 	SDL_DestroyTexture(player.texture);
 	SDL_DestroyTexture(enemy.texture);
-	SDL_DestroyTexture(damageEffect.texture);
+	SDL_DestroyTexture(damagedEffect);
 	SDL_DestroyTexture(gameBackground.texture);
 
 

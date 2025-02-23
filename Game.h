@@ -44,9 +44,9 @@ private:
 
 	ScrollingEntity gameBackground{};
 
-	MotionlessEntity damageEffect{};
-
 	Entity player{};
+	bool doingDamageE = false;
+	SDL_Texture* damagedEffect{};
 	Entity enemy{};
 
 	BulletEntity playerBullet{};
